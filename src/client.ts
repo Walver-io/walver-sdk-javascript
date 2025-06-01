@@ -27,6 +27,7 @@ interface VerificationOptions {
   force_email_verification?: boolean;
   force_telegram_verification?: boolean;
   force_twitter_verification?: boolean;
+  force_telephone_verification?: boolean;
 }
 
 export class Walver {
@@ -125,7 +126,8 @@ export class Walver {
       is_nft = false,
       force_email_verification = false,
       force_telegram_verification = false,
-      force_twitter_verification = false
+      force_twitter_verification = false,
+      force_telephone_verification = false
     } = options;
 
     let formattedExpiration = expiration;
@@ -151,12 +153,21 @@ export class Walver {
       is_nft,
       force_email_verification,
       force_telegram_verification,
-      force_twitter_verification
+      force_twitter_verification,
+      force_telephone_verification
     };
+
+    if (!folder_id && !webhook) {
+      throw new Error('If no folder_id is provided, webhook is required');
+    }
 
     // Validation
     if (webhook && !secret) {
       console.warn('Warning: secret is highly recommended when using webhooks');
+    }
+
+    if (webhook && !webhook.startsWith('https://')) {
+      throw new Error('webhook must start with https://');
     }
 
     if (token_gate) {
@@ -192,6 +203,15 @@ export class Walver {
       }
       if (!custom_fields.some(field => field.type === 'twitter')) {
         throw new Error('custom_fields[twitter] is required when using force_twitter_verification');
+      }
+    }
+
+    if (force_telephone_verification) {
+      if (!custom_fields || custom_fields.length === 0) {
+        throw new Error('custom_fields[telephone] is required when using force_telephone_verification');
+      }
+      if (!custom_fields.some(field => field.type === 'telephone')) {
+        throw new Error('custom_fields[telephone] is required when using force_telephone_verification');
       }
     }
 
