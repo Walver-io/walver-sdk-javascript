@@ -157,9 +157,17 @@ export class Walver {
       force_telephone_verification
     };
 
+    if (!folder_id && !webhook) {
+      throw new Error('If no folder_id is provided, webhook is required');
+    }
+
     // Validation
     if (webhook && !secret) {
       console.warn('Warning: secret is highly recommended when using webhooks');
+    }
+
+    if (webhook && !webhook.startsWith('https://')) {
+      throw new Error('webhook must start with https://');
     }
 
     if (token_gate) {
