@@ -28,6 +28,7 @@ interface VerificationOptions {
   force_telegram_verification?: boolean;
   force_twitter_verification?: boolean;
   force_telephone_verification?: boolean;
+  force_discord_verification?: boolean;
 }
 
 export class Walver {
@@ -127,7 +128,8 @@ export class Walver {
       force_email_verification = false,
       force_telegram_verification = false,
       force_twitter_verification = false,
-      force_telephone_verification = false
+      force_telephone_verification = false,
+      force_discord_verification = false
     } = options;
 
     let formattedExpiration = expiration;
@@ -154,7 +156,8 @@ export class Walver {
       force_email_verification,
       force_telegram_verification,
       force_twitter_verification,
-      force_telephone_verification
+      force_telephone_verification,
+      force_discord_verification
     };
 
     if (!folder_id && !webhook) {
@@ -212,6 +215,15 @@ export class Walver {
       }
       if (!custom_fields.some(field => field.type === 'telephone')) {
         throw new Error('custom_fields[telephone] is required when using force_telephone_verification');
+      }
+    }
+
+    if (force_discord_verification) {
+      if (!custom_fields || custom_fields.length === 0) {
+        throw new Error('custom_fields[discord] is required when using force_discord_verification');
+      }
+      if (!custom_fields.some(field => field.type === 'discord')) {
+        throw new Error('custom_fields[discord] is required when using force_discord_verification');
       }
     }
 
